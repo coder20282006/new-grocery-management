@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Customers')}"></head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <div th:replace="~{fragments/layout :: sidebar}"></div>
+            </div>
+            <div class="col-md-10 content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Customers</h2>
+                    <a th:href="@{/customers/add}" class="btn btn-primary">Add Customer</a>
+                </div>
+                <hr>
+                <div th:if="${successMessage}" class="alert alert-success mt-2" th:text="${successMessage}"></div>
+                <div th:if="${errorMessage}" class="alert alert-danger mt-2" th:text="${errorMessage}"></div>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c, stat : ${customers}">
+                            <td th:text="${stat.count}"></td>
+                            <td th:text="${c.name}"></td>
+                            <td th:text="${c.email}"></td>
+                            <td th:text="${c.phone}"></td>
+                            <td>
+                                <a th:href="@{'/customers/edit/' + ${c.id}}" class="btn btn-sm btn-warning">Edit</a>
+                                <a th:href="@{'/customers/delete/' + ${c.id}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this customer?')">Delete</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(customers)}">
+                            <td colspan="5" class="text-center">No customers found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('View Bill')}"></head>
+<body>
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <div class="col-md-2">
+            <div th:replace="~{fragments/layout :: sidebar}"></div>
+        </div>
+        <div class="col-md-10 content">
+            <h2>Invoice #<span th:text="${bill.id}"></span></h2>
+            <hr>
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <h5>Customer Details:</h5>
+                    <p th:if="${bill.customer != null}">
+                        <strong th:text="${bill.customer.name}"></strong><br>
+                        <span th:text="${bill.customer.phone}"></span><br>
+                        <span th:text="${bill.customer.email}"></span>
+                    </p>
+                    <p th:if="${bill.customer == null}">Walk-in Customer</p>
+                </div>
+                <div class="col-sm-6 text-end">
+                    <h5>Bill Date:</h5>
+                    <p th:text="${#temporals.format(bill.billDate, 'dd-MM-yyyy HH:mm')}"></p>
+                    <a th:href="@{'/bills/pdf/' + ${bill.id}}" class="btn btn-primary">Download PDF</a>
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>MRP</th>
+                        <th>Final Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Updated to use billItems instead of items -->
+                    <tr th:each="item : ${bill.billItems}">
+                        <td th:text="${item.product.name}"></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.mrp, 1, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.finalPrice, 1, 2)}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.finalPrice * item.quantity, 1, 2)}"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" class="text-end">Subtotal:</th>
+                        <th th:text="${#numbers.formatDecimal(bill.subtotal, 1, 2)}"></th>
+                    </tr>
+                    <tr>
+                        <th colspan="4" class="text-end">Discount Saved:</th>
+                        <th class="text-success" th:text="${#numbers.formatDecimal(bill.totalDiscount, 1, 2)}"></th>
+                    </tr>
+                    <tr class="table-success">
+                        <th colspan="4" class="text-end fs-5">Final Amount:</th>
+                        <th class="fs-5 fw-bold" th:text="${#numbers.formatDecimal(bill.finalAmount, 1, 2)}"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Add Product')}"></head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <div th:replace="~{fragments/layout :: sidebar}"></div>
+            </div>
+            <div class="col-md-10 content">
+                <h2 th:text="${product.id != null ? 'Edit Product' : 'Add Product'}">Add Product</h2>
+                <hr>
+                <div class="card" style="max-width: 800px;">
+                    <div class="card-body">
+                        <form th:action="@{/products/save}" th:object="${product}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" th:field="*{name}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" th:field="*{category.id}" required>
+                                        <option value="">Select Category</option>
+                                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Cost Price</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{costPrice}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">MRP</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{mrp}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Selling Price</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{sellingPrice}" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Discount (%)</label>
+                                    <input type="number" step="0.01" class="form-control" th:field="*{discount}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" class="form-control" th:field="*{quantity}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Expiry Date</label>
+                                    <input type="date" class="form-control" th:field="*{expiryDate}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save</button>
+                            <a th:href="@{/products}" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const mrpInput = document.getElementById('mrp');
+            const sellingPriceInput = document.getElementById('sellingPrice');
+            
+            form.addEventListener('submit', function(e) {
+                const mrp = parseFloat(mrpInput.value);
+                const sellingPrice = parseFloat(sellingPriceInput.value);
+                
+                if (sellingPrice > mrp) {
+                    e.preventDefault();
+                    // Give notification
+                    alert('Error: Selling Price cannot be greater than MRP (' + mrp + ')!');
+                }
+            });
+
+            // Also give instant notification on change
+            sellingPriceInput.addEventListener('change', function() {
+                const mrp = parseFloat(mrpInput.value);
+                const sellingPrice = parseFloat(sellingPriceInput.value);
+                
+                if (sellingPrice > mrp) {
+                    alert('Warning: Selling Price is greater than MRP!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

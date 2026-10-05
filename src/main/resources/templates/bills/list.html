@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Billing History')}"></head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <div th:replace="~{fragments/layout :: sidebar}"></div>
+            </div>
+            <div class="col-md-10 content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Billing History</h2>
+                    <a th:href="@{/bills/create}" class="btn btn-primary">New Bill</a>
+                </div>
+                <hr>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Bill ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${bills}">
+                            <td th:text="${b.id}"></td>
+                            <td th:text="${#temporals.format(b.billDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${b.customer != null ? b.customer.name : 'Walk-in'}"></td>
+                            <td th:text="${#numbers.formatDecimal(b.subtotal, 1, 2)}"></td>
+                            <td th:text="${#numbers.formatDecimal(b.totalDiscount, 1, 2)}"></td>
+                            <td class="table-success fw-bold" th:text="${#numbers.formatDecimal(b.finalAmount, 1, 2)}"></td>
+                            <td>
+                                <a th:href="@{'/bills/view/' + ${b.id}}" class="btn btn-sm btn-info">View</a>
+                                <a th:href="@{'/bills/pdf/' + ${b.id}}" class="btn btn-sm btn-secondary">PDF</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

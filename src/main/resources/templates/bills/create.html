@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Create Bill')}"></head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <div th:replace="~{fragments/layout :: sidebar}"></div>
+            </div>
+            <div class="col-md-10 content">
+                <h2>Create Bill</h2>
+                <hr>
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                <form th:action="@{/bills/save}" method="post">
+                    <div class="mb-3 w-50">
+                        <label class="form-label">Customer (Optional)</label>
+                        <select name="customerId" class="form-select">
+                            <option value="">-- Walk-in Customer --</option>
+                            <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name + ' - ' + c.phone}"></option>
+                        </select>
+                    </div>
+
+                    <h4>Items</h4>
+                    <table class="table table-bordered" id="itemsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select name="productIds" class="form-select" required>
+                                        <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name + ' (Stock: ' + p.quantity + ')'}"></option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="quantities" class="form-control" value="1" min="1" required>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">Add Another Item</button>
+                    <br>
+                    <button type="submit" class="btn btn-success btn-lg">Generate Bill</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div th:replace="~{fragments/layout :: scripts}"></div>
+    <script>
+        function addRow() {
+            var tbody = document.querySelector("#itemsTable tbody");
+            var tr = tbody.rows[0].cloneNode(true);
+            tr.querySelector("input").value = '1';
+            tbody.appendChild(tr);
+        }
+        function removeRow(btn) {
+            var row = btn.parentNode.parentNode;
+            if(document.querySelectorAll("#itemsTable tbody tr").length > 1) {
+                row.parentNode.removeChild(row);
+            } else {
+                alert("At least one item is required.");
+            }
+        }
+    </script>
+</body>
+</html>
